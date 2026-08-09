@@ -26,3 +26,14 @@ AI model integration
 REST APIs
 Project deployment
 This makes it an excellent capstone and portfolio project.
+# Personalized Interview System
+
+## How to Run
+1. Download or clone this repository.
+2. Open the PROJECT AI folder in Command Prompt.
+3. Install the required packages:
+pip install -r requirements.txt
+4. Run the application:
+python app.py
+5. Open the URL shown in the terminal, for example:
+http://127.0.0.1:5000
