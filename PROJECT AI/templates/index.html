@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Personalized AI Interview Preparation System{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1 class="hero-title">Ace Your Next Tech Interview<br>With AI-Powered Practice</h1>
+    <p class="hero-subtitle">
+        Upload your PDF resume, extract key technical competencies, target your dream role, and practice real-time interactive interview questions evaluated by intelligent AI.
+    </p>
+    
+    <div style="display: flex; gap: 16px; justify-content: center; margin-bottom: 40px;">
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg"><i class="fa-solid fa-rocket"></i> Start Free Mock Interview</a>
+        <a href="{{ url_for('login') }}" class="btn btn-secondary btn-lg"><i class="fa-solid fa-right-to-bracket"></i> User Sign In</a>
+    </div>
+
+    <!-- Feature Cards -->
+    <div class="features-grid">
+        <div class="glass-panel feature-card">
+            <div class="feature-icon">
+                <i class="fa-solid fa-file-invoice"></i>
+            </div>
+            <h3>PDF Skill Extraction</h3>
+            <p>Automatically parse PDF resumes to map your programming languages, frameworks, cloud, and system engineering skills.</p>
+        </div>
+
+        <div class="glass-panel feature-card">
+            <div class="feature-icon">
+                <i class="fa-solid fa-sliders"></i>
+            </div>
+            <h3>Target Role Matching</h3>
+            <p>Customize mock questions tailored to specific job roles such as Python Backend, Full Stack, Data Scientist, or DevOps.</p>
+        </div>
+
+        <div class="glass-panel feature-card">
+            <div class="feature-icon">
+                <i class="fa-solid fa-microphone-lines"></i>
+            </div>
+            <h3>Voice & Text Dictation</h3>
+            <p>Answer questions using integrated browser Web Speech API voice dictation or text formatting with live timers.</p>
+        </div>
+
+        <div class="glass-panel feature-card">
+            <div class="feature-icon">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <h3>AI Feedback & Analytics</h3>
+            <p>Receive detailed scoring breakdown (0-100), key strengths, improvement suggestions, sample model answers, and progress charts.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}500 Internal Error - AI Interview Prep{% endblock %}
+
+{% block content %}
+<div class="glass-panel" style="max-width: 600px; margin: 40px auto; padding: 48px 32px; text-align: center;">
+    <div style="font-size: 4rem; color: var(--accent-red); margin-bottom: 16px;">
+        <i class="fa-solid fa-bug"></i> 500
+    </div>
+    <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 12px;">Internal Server Error</h2>
+    <p style="color: var(--text-muted); margin-bottom: 28px;">
+        An unexpected server error occurred. Please try again or return to your dashboard.
+    </p>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+        <i class="fa-solid fa-gauge-high"></i> Go to Dashboard
+    </a>
+</div>
+{% endblock %}

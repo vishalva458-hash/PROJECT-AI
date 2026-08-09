@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Register - AI Interview Prep{% endblock %}
+
+{% block content %}
+<div class="glass-panel auth-box">
+    <h2 style="text-align: center; margin-bottom: 8px; font-size: 1.8rem;">Create Account</h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 28px; font-size: 0.95rem;">Join to build your skill profile and practice AI interviews</p>
+
+    <form action="{{ url_for('register') }}" method="POST">
+        <div class="form-group">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="johndoe" required autofocus>
+        </div>
+
+        <div class="form-group">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="john@example.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required minlength="6">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 12px; padding: 12px;">
+            <i class="fa-solid fa-user-plus"></i> Create Free Account
+        </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+        <div>Already have an account? <a href="{{ url_for('login') }}" style="color: var(--primary); text-decoration: none; font-weight: 600;">Sign in here</a></div>
+        <div><a href="{{ url_for('reset_password') }}" style="color: var(--text-muted); font-size: 0.85rem; text-decoration: none;">Forgot your password?</a></div>
+    </div>
+</div>
+{% endblock %}

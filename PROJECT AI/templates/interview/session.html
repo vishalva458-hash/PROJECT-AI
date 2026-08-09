@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Question {{ current_q.question_num }} of {{ total_q }} - AI Interview{% endblock %}
+
+{% block content %}
+<div class="glass-panel interview-box">
+    <!-- Top Header & Progress -->
+    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: var(--text-muted);">
+        <div>
+            <span style="font-weight: 700; color: var(--text-main);">Target Role:</span> {{ session.target_role }} ({{ session.experience_level }})
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <span><i class="fa-regular fa-clock" style="color: var(--accent-cyan);"></i> <strong id="timer" style="color: var(--text-main);">00:00</strong></span>
+            <span class="skill-tag" style="background: var(--primary-glow); color: white; border: none;">
+                {{ current_q.category }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+        <div class="progress-bar-fill" style="width: {{ progress_percent }}%;"></div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 24px;">
+        <span>Question {{ current_q.question_num }} of {{ total_q }}</span>
+        <span>{{ progress_percent }}% Completed</span>
+    </div>
+
+    <!-- Question Card -->
+    <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; margin-bottom: 24px;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; line-height: 1.5; color: var(--text-main);">
+            <i class="fa-solid fa-circle-question" style="color: var(--primary); margin-right: 8px;"></i>
+            {{ current_q.question_text }}
+        </h3>
+    </div>
+
+    <!-- Answer Form -->
+    <form action="{{ url_for('submit_answer', session_id=session.id) }}" method="POST" id="answerForm">
+        <input type="hidden" name="question_num" value="{{ current_q.question_num }}">
+
+        <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label for="user_answer" class="form-label" style="margin-bottom: 0;">Your Answer</label>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <span id="wordCount" style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">0 words</span>
+                    <button type="button" id="voiceBtn" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.82rem;">
+                        🎤 Voice Dictation
+                    </button>
+                </div>
+            </div>
+            
+            <textarea name="user_answer" id="user_answer" class="form-control" placeholder="Type or dictate your structured response here... (Tip: Mention STAR framework, key algorithms, libraries, or architecture decisions)" required></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+            <p style="font-size: 0.82rem; color: var(--text-muted);">
+                <i class="fa-solid fa-lightbulb" style="color: var(--accent-amber);"></i> Detailed responses with technical context yield higher AI evaluation scores.
+            </p>
+            <button type="submit" id="submitBtn" class="btn btn-primary btn-lg">
+                Submit & Evaluate <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/interview.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard & Progress Analytics - AI Interview Prep{% endblock %}
+
+{% block content %}
+<div>
+    <!-- Dashboard Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800;"><i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i> Interview Dashboard</h1>
+            <p style="color: var(--text-muted);">Track your mock interview score trajectory, category strengths, and AI recommendations.</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <a href="{{ url_for('resume_page') }}" class="btn btn-secondary"><i class="fa-solid fa-file-pdf"></i> Manage Skills</a>
+            <a href="{{ url_for('interview_setup') }}" class="btn btn-primary"><i class="fa-solid fa-play"></i> Start New Mock Interview</a>
+        </div>
+    </div>
+
+    <!-- Metric Cards -->
+    <div class="stats-grid">
+        <div class="glass-panel stat-card">
+            <div class="stat-icon" style="background: rgba(99, 102, 241, 0.2); color: var(--primary);">
+                <i class="fa-solid fa-list-check"></i>
+            </div>
+            <div>
+                <div class="stat-val">{{ metrics.total_sessions }}</div>
+                <div class="stat-lbl">Completed Sessions</div>
+            </div>
+        </div>
+
+        <div class="glass-panel stat-card">
+            <div class="stat-icon" style="background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan);">
+                <i class="fa-solid fa-gauge-high"></i>
+            </div>
+            <div>
+                <div class="stat-val">{{ metrics.avg_score }}%</div>
+                <div class="stat-lbl">Average Score</div>
+            </div>
+        </div>
+
+        <div class="glass-panel stat-card">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.2); color: var(--accent-green);">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <div>
+                <div class="stat-val">{{ metrics.best_score }}%</div>
+                <div class="stat-lbl">Personal Best Score</div>
+            </div>
+        </div>
+
+        <div class="glass-panel stat-card">
+            <div class="stat-icon" style="background: rgba(168, 85, 247, 0.2); color: var(--accent-purple);">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <div>
+                <div class="stat-val">{{ skills|length }}</div>
+                <div class="stat-lbl">Extracted Skills</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+        <!-- Line Chart: Performance Trend -->
+        <div class="glass-panel chart-card">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">
+                <i class="fa-solid fa-chart-line" style="color: var(--primary);"></i> Performance Score Trajectory
+            </h3>
+            <div style="position: relative; height: 260px;">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Radar Chart: Competency Breakdown -->
+        <div class="glass-panel chart-card">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">
+                <i class="fa-solid fa-bullseye" style="color: var(--accent-cyan);"></i> Category Competency Radar
+            </h3>
+            <div style="position: relative; height: 260px;">
+                <canvas id="categoryRadarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations & Recent History -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <!-- AI Personalized Recommendations -->
+        <div class="glass-panel" style="padding: 24px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-purple);"></i> Personalized Career & Skill Tips
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                {% for rec in metrics.recommendations %}
+                    <div style="background: rgba(15, 23, 42, 0.5); padding: 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-purple); font-size: 0.9rem; color: var(--text-main);">
+                        <i class="fa-solid fa-lightbulb" style="color: var(--accent-amber); margin-right: 6px;"></i> {{ rec }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Sessions Table -->
+        <div class="glass-panel" style="padding: 24px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-cyan);"></i> Recent Interview Sessions
+            </h3>
+
+            {% if recent_sessions %}
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-color); text-align: left; color: var(--text-muted);">
+                                <th style="padding: 10px;">Role</th>
+                                <th style="padding: 10px;">Date</th>
+                                <th style="padding: 10px;">Score</th>
+                                <th style="padding: 10px; text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in recent_sessions %}
+                                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                                    <td style="padding: 12px 10px; font-weight: 600;">{{ s.target_role }}</td>
+                                    <td style="padding: 12px 10px; color: var(--text-muted); font-size: 0.85rem;">{{ s.created_at.strftime("%b %d, %H:%M") }}</td>
+                                    <td style="padding: 12px 10px;">
+                                        {% if s.status == 'completed' %}
+                                            <span class="skill-tag" style="padding: 2px 8px; font-size: 0.8rem; background: var(--primary-glow); color: white; border: none;">
+                                                {{ s.total_score }}%
+                                            </span>
+                                        {% else %}
+                                            <span style="color: var(--accent-amber); font-size: 0.82rem;">In Progress</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding: 12px 10px; text-align: right;">
+                                        {% if s.status == 'completed' %}
+                                            <a href="{{ url_for('interview_results', session_id=s.id) }}" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.8rem;">Report</a>
+                                        {% else %}
+                                            <a href="{{ url_for('interview_session', session_id=s.id) }}" class="btn btn-primary btn-sm" style="padding: 4px 10px; font-size: 0.8rem;">Resume</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 36px 12px; color: var(--text-muted);">
+                    <p>No interview sessions completed yet.</p>
+                    <a href="{{ url_for('interview_setup') }}" class="btn btn-primary btn-sm" style="margin-top: 12px;">Start Your First Interview</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const historyLabels = {{ metrics.history_labels|tojson }};
+        const historyScores = {{ metrics.history_scores|tojson }};
+        const categoryData = {{ metrics.category_scores|tojson }};
+        initDashboardCharts(historyLabels, historyScores, categoryData);
+    });
+</script>
+{% endblock %}

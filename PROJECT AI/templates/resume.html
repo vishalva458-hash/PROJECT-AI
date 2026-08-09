@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Resume & Skills Profile - AI Interview Prep{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800;"><i class="fa-solid fa-file-pdf" style="color: var(--accent-red);"></i> Resume & Skill Extraction</h1>
+            <p style="color: var(--text-muted);">Upload your PDF resume to automatically extract tech competencies or add custom skills manually.</p>
+        </div>
+        <a href="{{ url_for('interview_setup') }}" class="btn btn-primary"><i class="fa-solid fa-play"></i> Start Mock Interview</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <!-- PDF Upload Panel -->
+        <div class="glass-panel" style="padding: 28px;">
+            <h3 style="font-size: 1.2rem; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-cloud-arrow-up" style="color: var(--primary);"></i> Upload PDF Resume
+            </h3>
+            
+            <form action="{{ url_for('upload_resume') }}" method="POST" enctype="multipart/form-data">
+                <div style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 32px 20px; text-align: center; background: rgba(15, 23, 42, 0.4); margin-bottom: 20px; transition: var(--transition);" id="dropzone">
+                    <i class="fa-solid fa-file-pdf" style="font-size: 3rem; color: var(--accent-red); margin-bottom: 12px;"></i>
+                    <p style="font-weight: 600; margin-bottom: 4px;">Choose a PDF resume file</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Supports .pdf up to 16MB</p>
+                    
+                    <input type="file" name="resume_file" id="resume_file" accept=".pdf" required style="display: none;" onchange="document.getElementById('fileName').textContent = this.files[0] ? this.files[0].name : ''">
+                    <label for="resume_file" class="btn btn-secondary btn-sm" style="cursor: pointer;">
+                        <i class="fa-solid fa-folder-open"></i> Select PDF File
+                    </label>
+                    <div id="fileName" style="margin-top: 10px; font-size: 0.88rem; color: var(--accent-cyan); font-weight: 600;"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Extract Skills from Resume
+                </button>
+            </form>
+
+            {% if resume %}
+                <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color); font-size: 0.88rem; color: var(--text-muted);">
+                    <p><strong>Current Active Resume:</strong> {{ resume.filename }}</p>
+                    <p><strong>Uploaded:</strong> {{ resume.uploaded_at.strftime("%B %d, %Y at %H:%M") }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Parsed Skills Profile -->
+        <div class="glass-panel" style="padding: 28px;">
+            <h3 style="font-size: 1.2rem; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-tags" style="color: var(--accent-cyan);"></i> Extracted Skill Profile ({{ skills|length }})
+            </h3>
+
+            <!-- Add Skill Form -->
+            <form action="{{ url_for('add_skill') }}" method="POST" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" name="skill" class="form-control" placeholder="Add missing skill (e.g., PyTorch, GraphQL)..." required style="flex: 1;">
+                <button type="submit" class="btn btn-secondary btn-sm"><i class="fa-solid fa-plus"></i> Add</button>
+            </form>
+
+            <!-- Skills List -->
+            {% if skills %}
+                <div class="skills-wrapper" style="max-height: 320px; overflow-y: auto; padding-right: 6px;">
+                    {% for skill in skills %}
+                        <div class="skill-tag">
+                            <span>{{ skill }}</span>
+                            <form action="{{ url_for('remove_skill') }}" method="POST" style="display: inline;">
+                                <input type="hidden" name="skill" value="{{ skill }}">
+                                <button type="submit" class="remove-skill-btn" title="Remove skill">&times;</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+                    <i class="fa-solid fa-file-arrow-up" style="font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5;"></i>
+                    <p>No skills extracted yet.</p>
+                    <p style="font-size: 0.85rem;">Upload your PDF resume on the left or add skills manually above.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Interview Evaluation Results - AI Interview Prep{% endblock %}
+
+{% block content %}
+<div style="max-width: 960px; margin: 0 auto;">
+    <!-- Top Summary Banner -->
+    <div class="glass-panel" style="padding: 32px; text-align: center; margin-bottom: 32px;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 24px; flex-wrap: wrap;">
+            <div class="score-badge">
+                {{ session.total_score }}%
+            </div>
+            <div style="text-align: left;">
+                <h1 style="font-size: 1.8rem; font-weight: 800;">Interview Performance Report</h1>
+                <p style="color: var(--text-muted);">
+                    <strong>Role:</strong> {{ session.target_role }} | 
+                    <strong>Completed:</strong> {{ session.created_at.strftime("%B %d, %Y") }}
+                </p>
+                <div style="margin-top: 12px; display: flex; gap: 12px;">
+                    <a href="{{ url_for('interview_setup') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-rotate-right"></i> Retake Interview</a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm"><i class="fa-solid fa-chart-pie"></i> View Analytics Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question by Question Breakdown -->
+    <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 20px;">
+        <i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Question-by-Question AI Breakdown
+    </h2>
+
+    {% for qa in session.questions %}
+        <div class="glass-panel qa-card">
+            <!-- Question Header -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 16px;">
+                <div>
+                    <span class="skill-tag" style="font-size: 0.75rem; padding: 2px 8px; margin-bottom: 8px;">Q{{ qa.question_num }} • {{ qa.category }}</span>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; line-height: 1.4;">{{ qa.question_text }}</h3>
+                </div>
+                <div style="text-align: right; flex-shrink: 0;">
+                    {% if qa.score >= 80 %}
+                        <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 1.1rem;">
+                            {{ qa.score }}%
+                        </span>
+                    {% elif qa.score >= 60 %}
+                        <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 1.1rem;">
+                            {{ qa.score }}%
+                        </span>
+                    {% else %}
+                        <span style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 1.1rem;">
+                            {{ qa.score }}%
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- User Answer -->
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 14px 18px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary); margin-bottom: 16px; font-size: 0.93rem;">
+                <strong style="color: var(--text-muted); display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase;">Your Submitted Answer:</strong>
+                <p style="white-space: pre-wrap;">{{ qa.user_answer or "No answer provided." }}</p>
+            </div>
+
+            <!-- AI Constructive Feedback -->
+            <div style="margin-bottom: 16px; font-size: 0.93rem;">
+                <strong style="color: var(--accent-cyan);"><i class="fa-solid fa-robot"></i> AI Feedback:</strong>
+                <p style="color: var(--text-main); margin-top: 4px;">{{ qa.feedback }}</p>
+            </div>
+
+            <!-- Strengths & Improvements Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 14px; border-radius: var(--radius-sm);">
+                    <strong style="color: #34d399; font-size: 0.85rem;"><i class="fa-solid fa-circle-check"></i> Key Strengths</strong>
+                    <ul style="margin-top: 8px; padding-left: 20px; font-size: 0.88rem; color: var(--text-main);">
+                        {% for str_item in qa.strengths %}
+                            <li>{{ str_item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); padding: 14px; border-radius: var(--radius-sm);">
+                    <strong style="color: #fbbf24; font-size: 0.85rem;"><i class="fa-solid fa-circle-exclamation"></i> Actionable Improvements</strong>
+                    <ul style="margin-top: 8px; padding-left: 20px; font-size: 0.88rem; color: var(--text-main);">
+                        {% for imp_item in qa.improvements %}
+                            <li>{{ imp_item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Model Sample Answer -->
+            {% if qa.sample_answer %}
+                <details style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: var(--radius-sm); padding: 12px 16px;">
+                    <summary style="cursor: pointer; font-weight: 600; color: #a5b4fc; font-size: 0.9rem;">
+                        <i class="fa-solid fa-graduation-cap"></i> View Ideal Sample Model Answer
+                    </summary>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-main); white-space: pre-wrap; line-height: 1.6;">
+                        {{ qa.sample_answer }}
+                    </p>
+                </details>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

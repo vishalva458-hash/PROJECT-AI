@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Mock Interview Setup - AI Interview Prep{% endblock %}
+
+{% block content %}
+<div class="glass-panel" style="max-width: 680px; margin: 20px auto; padding: 36px;">
+    <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; text-align: center;">
+        <i class="fa-solid fa-sliders" style="color: var(--primary);"></i> Setup Personalized Interview
+    </h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 28px;">
+        Select your target job role and experience level. AI will personalize questions based on your resume skills.
+    </p>
+
+    <form action="{{ url_for('start_interview') }}" method="POST">
+        <!-- Target Role Selection -->
+        <div class="form-group">
+            <label for="target_role" class="form-label"><i class="fa-solid fa-briefcase"></i> Target Job Role</label>
+            <select name="target_role" id="target_role" class="form-control" required style="cursor: pointer;">
+                {% for role in roles %}
+                    <option value="{{ role }}">{{ role }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Experience Level Selection -->
+        <div class="form-group">
+            <label for="experience_level" class="form-label"><i class="fa-solid fa-layer-group"></i> Target Experience Level</label>
+            <select name="experience_level" id="experience_level" class="form-control" required style="cursor: pointer;">
+                <option value="Entry Level (0-2 years)">Entry Level (0-2 years)</option>
+                <option value="Mid Level (2-5 years)" selected>Mid Level (2-5 years)</option>
+                <option value="Senior Level (5+ years)">Senior Level (5+ years)</option>
+                <option value="Lead / Staff Engineer">Lead / Staff Engineer</option>
+            </select>
+        </div>
+
+        <!-- Skill Profile Summary -->
+        <div style="background: rgba(15, 23, 42, 0.5); padding: 18px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-bottom: 24px;">
+            <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa-solid fa-tags"></i> Active Resume Skills Included</span>
+                <a href="{{ url_for('resume_page') }}" style="color: var(--primary); font-size: 0.82rem; text-decoration: none;">Manage Skills</a>
+            </div>
+            
+            {% if skills %}
+                <div class="skills-wrapper">
+                    {% for skill in skills[:8] %}
+                        <span class="skill-tag" style="font-size: 0.8rem; padding: 4px 10px;">{{ skill }}</span>
+                    {% endfor %}
+                    {% if skills|length > 8 %}
+                        <span style="font-size: 0.8rem; color: var(--text-muted); align-self: center;">+{{ skills|length - 8 }} more</span>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p style="font-size: 0.85rem; color: var(--accent-amber);">
+                    <i class="fa-solid fa-circle-exclamation"></i> No skills found in your profile. Questions will be generated based on general role standard competencies.
+                </p>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+            <i class="fa-solid fa-bolt"></i> Generate Questions & Begin Interview
+        </button>
+    </form>
+</div>
+{% endblock %}
